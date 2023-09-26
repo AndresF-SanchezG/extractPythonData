@@ -1,7 +1,9 @@
+import fitz
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.responses import HTMLResponse
-import fitz
 from tabula import read_pdf
+import os
+os.environ['JAVA_HOME'] = '/usr'
 
 def convertir_a_json_compatible(data):
     if isinstance(data, list):
@@ -79,13 +81,13 @@ async def upload_file(pdf_file: UploadFile = File(...)):
      
 
         # Extraer texto del PDF
-        doc = fitz.open(pdf_path)
-        text = ""
-        for page in doc:
-            page_text = page.get_text()
-            page_text = page_text.replace('Fechas de viaje', '').replace('*Última noche de alojamiento en el hotel.', '')
-            text += page_text
-        doc.close()
+        # doc = fitz.open(pdf_path)
+        # text = ""
+        # for page in doc:
+        #     page_text = page.get_text()
+        #     page_text = page_text.replace('Fechas de viaje', '').replace('*Última noche de alojamiento en el hotel.', '')
+        #     text += page_text
+        # doc.close()
 
       
 
@@ -95,7 +97,7 @@ async def upload_file(pdf_file: UploadFile = File(...)):
         table_data = []
         for table in tables:
             table_data.append(convertir_a_json_compatible(table.to_dict()))
-        text = convertir_a_json_compatible(text)
+     
 
         return {'tables': table_data }
 
@@ -106,4 +108,4 @@ async def upload_file(pdf_file: UploadFile = File(...)):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
